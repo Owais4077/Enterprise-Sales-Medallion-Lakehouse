@@ -28,6 +28,6 @@ def test_env_vars_override_defaults(monkeypatch):
 
 def test_pipeline_yaml_loads_and_missing_file_fails():
     cfg = load_yaml_config("pipeline")
-    assert "orders" in cfg["sources"]["postgres"]
+    assert "orders" in cfg["sources"]["postgres"]["tables"]
     with pytest.raises(FileNotFoundError):
         load_yaml_config("does_not_exist")

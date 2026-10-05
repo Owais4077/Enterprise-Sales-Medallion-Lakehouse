@@ -1,15 +1,47 @@
-# Pipeline structure (no secrets here). Extended in later phases.
+# Pipeline structure (no secrets here).
 project:
   name: enterprise-data-platform
   timezone: UTC
 
 layers: [bronze, silver, gold]
 
-# Source tables and how they are loaded incrementally (used from Phase 3 onward).
+ingestion:
+  batch_size: 10000              # rows fetched from PostgreSQL per round trip
+  max_rows_per_file: 100000      # landing part files rotate after this many rows
+  watermark_lag_seconds: 30      # only read rows older than (db clock - lag): protects against
+                                 # transactions that commit slightly late
+  retry:
+    max_attempts: 5
+    base_delay_seconds: 1.0      # delay doubles each attempt ...
+    max_delay_seconds: 30.0      # ... up to this cap
+    jitter: 0.2                  # +/- 20% random spread, avoids synchronised retry storms
+  api:
+    timeout_seconds: 30
+    page_size: 500
+
 sources:
   postgres:
-    customers:   {primary_key: customer_id,   watermark_column: updated_at}
-    products:    {primary_key: product_id,    watermark_column: updated_at}
-    orders:      {primary_key: order_id,      watermark_column: updated_at}
-    order_items: {primary_key: order_item_id, watermark_column: updated_at}
-    payments:    {primary_key: payment_id,    watermark_column: updated_at}
+    schema: sales
+    tables:
+      # NOTE: order_items has no updated_at bump when its parent order changes; item rows are
+      # only re-extracted if the item itself is updated.
+      customers:   {primary_key: customer_id,   watermark_column: updated_at}
+      products:    {primary_key: product_id,    watermark_column: updated_at}
+      orders:      {primary_key: order_id,      watermark_column: updated_at}
+      order_items: {primary_key: order_item_id, watermark_column: updated_at}
+      payments:    {primary_key: payment_id,    watermark_column: updated_at}
+  api:
+    exchange_rates:
+      endpoint: /api/v1/exchange-rates
+      watermark_field: updated_at
+      primary_key: [rate_date, quote_currency]
+  files:                         # directories are relative to RAW_DATA_DIR
+    countries:
+      directory: countries
+      pattern: "*.csv"
+      format: csv
+      required_columns: [country_code, iso3, country_name, region, currency_code]
+    reviews:
+      directory: reviews
+      pattern: "reviews_*.json"
+      format: json

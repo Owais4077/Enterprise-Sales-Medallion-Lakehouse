@@ -1,6 +1,6 @@
 # Enterprise Sales & Customer Data Platform
 
-> Status: **Phase 2 of 16 complete** (source systems and data). Sections marked _TBD_ are filled
+> Status: **Phase 3 of 16 complete** (ingestion framework). Sections marked _TBD_ are filled
 > in as the matching phase is built. Nothing here is claimed to work until it has been run.
 
 ## 1. Project overview
@@ -38,10 +38,17 @@ Star schema (Gold): _TBD (Phase 6)_
 _TBD (Phases 4-6)_
 
 ## 8. Pipeline workflow
-_TBD (Phase 9)_
+Extraction is implemented (Phase 3): sources -> landing zone, with watermarks, atomic batches,
+retries and an audit trail. See [docs/ingestion.md](docs/ingestion.md).
+```bash
+docker compose run --rm app python -m edp.ingestion     # incremental run of all sources
+```
+Full DAG: _TBD (Phase 9)_
 
 ## 9. Incremental processing
-_TBD (Phase 7)_
+Ingestion side is done (Phase 3): PostgreSQL uses a bounded `updated_at` window on the database
+clock, the API uses `updated_since`, files are tracked by name + SHA-256. Delivery is
+at-least-once; deduplication and MERGE logic arrive in Phase 7. Details: [docs/ingestion.md](docs/ingestion.md).
 
 ## 10. Data quality
 _TBD (Phase 8)_
@@ -69,7 +76,8 @@ black --check .        # formatting
 ```
 
 ## 17. Monitoring
-_TBD (Phase 15)_
+Every ingestion run is audited in `pipeline_runs` (status, rows extracted/landed, watermark range,
+error type/message). Dashboards and views: _TBD (Phase 15)_.
 
 ## 18. Security
 Secrets live only in `.env` (git-ignored). Copy `.env.example` to `.env` and fill it in.
@@ -81,6 +89,7 @@ Prerequisites: Docker Desktop, Git. Optional: Python 3.11-3.12 for running tests
 cp .env.example .env                           # then set POSTGRES_PASSWORD and API_KEY
 docker compose up -d --build postgres mock-api  # PostgreSQL (schema auto-created) + mock API
 docker compose run --rm app python -m data_generation.generate all   # ~90 s: files + load DB
+docker compose run --rm app python -m edp.ingestion   # ingest all sources into data/landing
 docker compose run --rm app pytest              # unit tests
 docker compose run --rm app pytest -m integration   # tests against the live database
 ```

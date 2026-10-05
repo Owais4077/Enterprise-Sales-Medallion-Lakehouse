@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     postgres_user: str = "edp_user"
     postgres_password: SecretStr = SecretStr("")
 
+    landing_dir: str = "data/landing"
+    raw_data_dir: str = "data/raw"
+    state_db_path: str = "data/state/pipeline_state.db"
+
     api_base_url: str = "http://localhost:8000"
     api_key: SecretStr = SecretStr("")
 
@@ -54,6 +58,12 @@ class Settings(BaseSettings):
     def postgres_jdbc_url(self) -> str:
         """JDBC URL for Spark. The password is passed separately, never embedded."""
         return f"jdbc:postgresql://{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+
+
+def resolve_path(value: str | Path) -> Path:
+    """Resolve a configured path; relative paths are anchored at the project root."""
+    path = Path(value)
+    return path if path.is_absolute() else PROJECT_ROOT / path
 
 
 @lru_cache

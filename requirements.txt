@@ -5,3 +5,4 @@ PyYAML>=6.0,<7
 psycopg2-binary>=2.9.10,<3
 # Exact pin: synthetic data must be identical between runs and machines.
 Faker==40.40.0
+httpx>=0.27,<1
