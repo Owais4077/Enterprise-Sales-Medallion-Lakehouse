@@ -2,3 +2,6 @@
 pydantic>=2.6,<3
 pydantic-settings>=2.2,<3
 PyYAML>=6.0,<7
+psycopg2-binary>=2.9.10,<3
+# Exact pin: synthetic data must be identical between runs and machines.
+Faker==40.40.0

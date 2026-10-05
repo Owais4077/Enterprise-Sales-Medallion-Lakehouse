@@ -1,0 +1,32 @@
+# Synthetic data settings. Same seed + same Faker version => identical data.
+seed: 42
+
+window:
+  start_date: "2024-01-01"   # first order date
+  end_date: "2025-12-31"     # "now" for the generated world
+  customer_history_start: "2023-07-01"
+
+volumes:
+  customers: 5000            # base customers; duplicates are added on top
+  products: 200
+  orders: 50000
+  reviews: 8000
+
+# Fraction of rows that receive each deliberate defect.
+defects:
+  customer_duplicate_rate: 0.02
+  customer_null_city_rate: 0.03
+  customer_null_phone_rate: 0.10
+  customer_messy_country_rate: 0.02
+  product_messy_category_rate: 0.01
+  order_future_date_rate: 0.003
+  order_negative_total_rate: 0.002
+  order_total_mismatch_rate: 0.01
+  payment_negative_rate: 0.005
+  payment_amount_mismatch_rate: 0.01
+  review_orphan_customer_rate: 0.01
+  review_invalid_rating_rate: 0.01
+  review_duplicate_rate: 0.01
+
+exchange_rates:
+  correction_rate: 0.005     # share of rates restated later (gives the API real updates)

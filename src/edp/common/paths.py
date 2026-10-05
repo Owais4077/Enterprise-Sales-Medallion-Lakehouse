@@ -6,13 +6,13 @@ from laptop to S3 is a configuration change, not a code change.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 
 from edp.common.config import PROJECT_ROOT, Settings
 
 
-class Layer(str, Enum):
+class Layer(StrEnum):
     """Medallion layers plus supporting areas."""
 
     BRONZE = "bronze"

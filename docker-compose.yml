@@ -1,6 +1,38 @@
-# Skeleton. Services are added phase by phase:
+# Services are added phase by phase:
 #   Phase 2 postgres + mock-api | Phase 4 spark | Phase 9-10 airflow
+# Requires a .env file: cp .env.example .env
 services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-sales_oltp}
+      POSTGRES_USER: ${POSTGRES_USER:-edp_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"   # localhost only, never exposed to the network
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # *.sql files here run once, alphabetically, when the data volume is first created
+      - ./sql/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mock-api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.mockapi
+    environment:
+      API_KEY: ${API_KEY:?Set API_KEY in .env}
+      EXCHANGE_RATES_FILE: /data/exchange_rates.json
+      MOCK_API_FAIL_EVERY_N: ${MOCK_API_FAIL_EVERY_N:-0}
+    ports:
+      - "127.0.0.1:${MOCK_API_PORT:-8000}:8000"
+    volumes:
+      - ./data/api_source:/data:ro
+
   app:
     build:
       context: .
@@ -8,6 +40,14 @@ services:
     env_file:
       - path: .env
         required: false
+    environment:
+      # Inside the compose network the services are reached by name, not localhost.
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      API_BASE_URL: http://mock-api:8000
     volumes:
       - .:/app
     command: ["pytest"]
+
+volumes:
+  pgdata:

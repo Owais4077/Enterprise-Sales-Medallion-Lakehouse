@@ -1,6 +1,6 @@
 # Enterprise Sales & Customer Data Platform
 
-> Status: **Phase 1 of 16 complete** (repository foundation). Sections marked _TBD_ are filled
+> Status: **Phase 2 of 16 complete** (source systems and data). Sections marked _TBD_ are filled
 > in as the matching phase is built. Nothing here is claimed to work until it has been run.
 
 ## 1. Project overview
@@ -19,10 +19,20 @@ Python, SQL, PostgreSQL, PySpark, Delta Lake, Airflow, Docker, GitHub Actions, P
 Black. Optional: AWS S3 / RDS, Databricks, Power BI.
 
 ## 5. Data sources
-See [docs/data_sources.md](docs/data_sources.md). _Implemented in Phase 2._
+Synthetic and reproducible. PostgreSQL (5 tables, ~250k rows), a mock REST API
+(exchange rates) and CSV/JSON files, with deliberately injected data defects.
+See [docs/data_sources.md](docs/data_sources.md).
 
 ## 6. Data model
-_TBD (Phases 2 and 6)_
+Source schema: [sql/postgres/001_schema.sql](sql/postgres/001_schema.sql).
+```mermaid
+erDiagram
+    customers ||--o{ orders : places
+    orders ||--|{ order_items : contains
+    products ||--o{ order_items : "sold as"
+    orders ||--o{ payments : "paid by"
+```
+Star schema (Gold): _TBD (Phase 6)_
 
 ## 7. Bronze / Silver / Gold architecture
 _TBD (Phases 4-6)_
@@ -66,11 +76,15 @@ Secrets live only in `.env` (git-ignored). Copy `.env.example` to `.env` and fil
 Never commit credentials.
 
 ## 19. Local setup
-Prerequisites: Docker Desktop, Git. Optional: Python 3.10-3.12 for running tests without Docker.
+Prerequisites: Docker Desktop, Git. Optional: Python 3.11-3.12 for running tests without Docker.
 ```bash
-cp .env.example .env
-docker compose run --rm --build app            # runs pytest in the reference environment
+cp .env.example .env                           # then set POSTGRES_PASSWORD and API_KEY
+docker compose up -d --build postgres mock-api  # PostgreSQL (schema auto-created) + mock API
+docker compose run --rm app python -m data_generation.generate all   # ~90 s: files + load DB
+docker compose run --rm app pytest              # unit tests
+docker compose run --rm app pytest -m integration   # tests against the live database
 ```
+If host port 8000 or 5432 is busy, change `MOCK_API_PORT` / `POSTGRES_PORT` in `.env`.
 
 ## 20. Deployment
 _TBD (Phase 13)_

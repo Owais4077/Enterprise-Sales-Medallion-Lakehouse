@@ -1,0 +1,3 @@
+# Mock REST API service (also installed in the dev image for its tests).
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
