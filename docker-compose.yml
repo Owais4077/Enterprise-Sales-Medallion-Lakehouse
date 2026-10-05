@@ -1,0 +1,13 @@
+# Skeleton. Services are added phase by phase:
+#   Phase 2 postgres + mock-api | Phase 4 spark | Phase 9-10 airflow
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.app
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - .:/app
+    command: ["pytest"]

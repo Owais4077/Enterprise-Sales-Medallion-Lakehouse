@@ -1,0 +1,44 @@
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*
+aws_credentials*
+.aws/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Data & lake (generated locally, reproducible from data_generation/)
+data/*
+!data/.gitkeep
+spark-warehouse/
+metastore_db/
+derby.log
+checkpoints/
+
+# Airflow
+airflow/logs/
+airflow/*.db
+airflow-webserver.pid
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Power BI temp files
+*.pbix.tmp
+.pytest_tmp/
