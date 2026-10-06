@@ -1,7 +1,8 @@
 # Enterprise Sales & Customer Data Platform
 
-> Status: **Phase 15 of 16 complete** (Ingestion, Bronze, Silver, Gold star schema, Data Quality, Airflow orchestration, CI/CD, SQL audit views, and Power BI DAX metrics). Sections marked _TBD_ are filled
-> in as the matching phase is built. Nothing here is claimed to work until it has been run.
+[![CI](https://github.com/Owais4077/Enterprise-Sales-Medallion-Lakehouse/actions/workflows/ci.yml/badge.svg)](https://github.com/Owais4077/Enterprise-Sales-Medallion-Lakehouse/actions)
+
+> Status: **Phase 16 of 16 complete (100% complete)**. Production-grade Medallion Lakehouse on PySpark & Delta Lake with Airflow Orchestration, Data Quality Framework, CI/CD, and Power BI Analytics.
 
 ## 1. Project overview
 End-to-end data engineering project: ingest sales data from PostgreSQL, a REST API and files,
