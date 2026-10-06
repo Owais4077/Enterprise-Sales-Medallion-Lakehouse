@@ -6,6 +6,7 @@ import os
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
+from mangum import Mangum
 
 app = FastAPI(
     title="Enterprise Sales & Data Platform API",
@@ -13,7 +14,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
-handler = app
+handler = Mangum(app)
+
 
 
 
