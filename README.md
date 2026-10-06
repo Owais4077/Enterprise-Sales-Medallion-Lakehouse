@@ -1,6 +1,6 @@
 # Enterprise Sales & Customer Data Platform
 
-> Status: **Phase 3 of 16 complete** (ingestion framework). Sections marked _TBD_ are filled
+> Status: **Phase 15 of 16 complete** (Ingestion, Bronze, Silver, Gold star schema, Data Quality, Airflow orchestration, CI/CD, SQL audit views, and Power BI DAX metrics). Sections marked _TBD_ are filled
 > in as the matching phase is built. Nothing here is claimed to work until it has been run.
 
 ## 1. Project overview

@@ -1,0 +1,4 @@
+# Spark stack. Installed in the Docker image only (needs Java 17 + Python <= 3.12).
+# delta-spark 3.2.x is the release line built for Spark 3.5.
+pyspark==3.5.3
+delta-spark==3.2.1

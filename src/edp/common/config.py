@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     raw_data_dir: str = "data/raw"
     state_db_path: str = "data/state/pipeline_state.db"
 
+    spark_master: str = "local[2]"
+    spark_driver_memory: str = "2g"
+    spark_shuffle_partitions: int = 8
+
     api_base_url: str = "http://localhost:8000"
     api_key: SecretStr = SecretStr("")
 

@@ -32,5 +32,6 @@ pythonpath = ["src", "."]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers --basetemp=.pytest_tmp -m \"not integration\""
 markers = [
+    "spark: needs the Spark/Delta stack (Docker image); slow, deselect with -m \"not spark\"",
     "integration: needs external services (Postgres, Spark, API); run with -m integration",
 ]
