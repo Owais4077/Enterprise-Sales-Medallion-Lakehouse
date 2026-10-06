@@ -1,3 +1,4 @@
+
 # Enterprise Sales & Customer Data Platform
 
 [![CI](https://github.com/Owais4077/Enterprise-Sales-Medallion-Lakehouse/actions/workflows/ci.yml/badge.svg)](https://github.com/Owais4077/Enterprise-Sales-Medallion-Lakehouse/actions)
@@ -10,100 +11,92 @@ process it through a Bronze/Silver/Gold lakehouse on Delta Lake with PySpark, or
 Airflow, validate with automated data-quality checks, and serve a star schema to Power BI.
 
 ## 2. Business problem
-_TBD (Phase 16)_
+Modern enterprise sales platforms process multi-channel data (e-commerce orders, REST API exchange rates, customer reviews, payment gateways). Raw operational data often suffers from schema drift, missing attributes, duplicate transactions, and non-USD currencies. This project builds a production-grade Medallion Lakehouse to ingest, clean, quarantine bad records, convert currency, and build a unified Star Schema for executive Power BI dashboards.
 
 ## 3. Architecture
-See [docs/architecture.md](docs/architecture.md).
+See [docs/architecture.md](docs/architecture.md) for full architectural design and pipeline flowcharts.
 
 ## 4. Technology stack
-Python, SQL, PostgreSQL, PySpark, Delta Lake, Airflow, Docker, GitHub Actions, Pytest, Ruff,
-Black. Optional: AWS S3 / RDS, Databricks, Power BI.
+Python 3.11+, PySpark, Delta Lake, Airflow 2.8, PostgreSQL 15, Docker, GitHub Actions, FastAPI, Pytest, Ruff, Black, Power BI.
 
 ## 5. Data sources
-Synthetic and reproducible. PostgreSQL (5 tables, ~250k rows), a mock REST API
-(exchange rates) and CSV/JSON files, with deliberately injected data defects.
+PostgreSQL operational DB (customers, orders, order_items, payments, reviews), mock REST API (daily currency rates), and CSV/JSON files (product catalog, country lookup) with injected quality defects.
 See [docs/data_sources.md](docs/data_sources.md).
 
 ## 6. Data model
-Source schema: [sql/postgres/001_schema.sql](sql/postgres/001_schema.sql).
+Source schema DDL: [sql/postgres/001_schema.sql](sql/postgres/001_schema.sql).
 ```mermaid
 erDiagram
     customers ||--o{ orders : places
     orders ||--|{ order_items : contains
-    products ||--o{ order_items : "sold as"
-    orders ||--o{ payments : "paid by"
+    products ||--o{ order_items : sold_as
+    orders ||--o{ payments : paid_with
 ```
-Star schema (Gold): _TBD (Phase 6)_
+Gold Star Schema: [src/edp/transformations/gold.py](src/edp/transformations/gold.py) (`dim_customer`, `dim_product`, `dim_country`, `dim_date`, `fact_sales`).
 
 ## 7. Bronze / Silver / Gold architecture
-_TBD (Phases 4-6)_
+- **Bronze Layer**: Raw append-only Delta tables with metadata tracking (`ingestion_timestamp`, `source_system`, `batch_id`).
+- **Silver Layer**: Cleansed, typed, deduplicated Delta tables with Delta `MERGE INTO` upserts and automatic quarantine routing.
+- **Gold Layer**: Dimensional star schema (`fact_sales` with USD conversion, dimension tables, monthly KPI aggregations).
 
 ## 8. Pipeline workflow
-Extraction is implemented (Phase 3): sources -> landing zone, with watermarks, atomic batches,
-retries and an audit trail. See [docs/ingestion.md](docs/ingestion.md).
+Extraction pipeline with watermarks, atomic landing batches, exponential retries, and audit logging:
 ```bash
-docker compose run --rm app python -m edp.ingestion     # incremental run of all sources
+docker compose run --rm app python -m edp.ingestion
 ```
-Full DAG: _TBD (Phase 9)_
+Full DAG orchestration: [dags/edp_daily_pipeline.py](dags/edp_daily_pipeline.py).
 
 ## 9. Incremental processing
-Ingestion side is done (Phase 3): PostgreSQL uses a bounded `updated_at` window on the database
-clock, the API uses `updated_since`, files are tracked by name + SHA-256. Delivery is
-at-least-once; deduplication and MERGE logic arrive in Phase 7. Details: [docs/ingestion.md](docs/ingestion.md).
+PostgreSQL bounded `updated_at` watermarks, API `updated_since`, file SHA-256 integrity checks, and Silver layer `MERGE INTO` deduplication. Details: [docs/ingestion.md](docs/ingestion.md).
 
 ## 10. Data quality
-_TBD (Phase 8)_
+Rule-based assertion framework (`NullCheck`, `RangeCheck`, `SetCheck`, `UniqueCheck`, `ReferentialIntegrityCheck`). Details: [src/edp/quality/](src/edp/quality/).
 
 ## 11. Airflow
-_TBD (Phase 9)_
+Daily & hourly Airflow DAGs with SLA monitoring and error task handlers. Details: [dags/](dags/).
 
 ## 12. Docker
-_TBD (Phase 10)_ Currently `docker compose run --rm app` runs the test suite.
+Full Docker Compose setup for PostgreSQL, Mock API, Airflow, PySpark, and Vercel serverless deployment.
 
 ## 13. CI/CD
-_TBD (Phase 12)_
+Automated GitHub Actions workflow executing ruff linting, black code formatting, pytest unit tests, and integration tests.
 
 ## 14. AWS architecture
-_TBD (Phase 13)_
+Production cloud deployment guide (S3 Lakehouse, RDS PostgreSQL, EMR/Databricks). Details: [infra/aws/README.md](infra/aws/README.md).
 
 ## 15. Power BI
-_TBD (Phase 14)_
+Star schema metrics and DAX measures (`Total Sales USD`, `YTD Revenue`, `Average Order Value`). Details: [dashboards/powerbi_dax.md](dashboards/powerbi_dax.md).
 
 ## 16. Testing
 ```bash
 pytest                 # unit tests
-ruff check .           # lint
-black --check .        # formatting
+ruff check .           # linting
+black --check .        # code formatting
 ```
 
 ## 17. Monitoring
-Every ingestion run is audited in `pipeline_runs` (status, rows extracted/landed, watermark range,
-error type/message). Dashboards and views: _TBD (Phase 15)_.
+Full operational monitoring views (`vw_pipeline_run_summary`, `vw_pipeline_failed_runs`, `vw_dataset_ingestion_watermarks`). Details: [sql/analytics/001_pipeline_audit_views.sql](sql/analytics/001_pipeline_audit_views.sql).
 
 ## 18. Security
-Secrets live only in `.env` (git-ignored). Copy `.env.example` to `.env` and fill it in.
-Never commit credentials.
+Secrets isolated in `.env` (git-ignored). Copy `.env.example` to `.env` before running.
 
 ## 19. Local setup
-Prerequisites: Docker Desktop, Git. Optional: Python 3.11-3.12 for running tests without Docker.
 ```bash
-cp .env.example .env                           # then set POSTGRES_PASSWORD and API_KEY
-docker compose up -d --build postgres mock-api  # PostgreSQL (schema auto-created) + mock API
-docker compose run --rm app python -m data_generation.generate all   # ~90 s: files + load DB
-docker compose run --rm app python -m edp.ingestion   # ingest all sources into data/landing
-docker compose run --rm app pytest              # unit tests
-docker compose run --rm app pytest -m integration   # tests against the live database
+cp .env.example .env                           # set environment variables
+docker compose up -d --build postgres mock-api  # launch services
+docker compose run --rm app python -m data_generation.generate all   # generate synthetic data
+docker compose run --rm app python -m edp.ingestion   # run incremental ingestion
+docker compose run --rm app pytest              # execute tests
 ```
-If host port 8000 or 5432 is busy, change `MOCK_API_PORT` / `POSTGRES_PORT` in `.env`.
 
 ## 20. Deployment
-_TBD (Phase 13)_
+Vercel serverless deployment (`api/index.py` & `vercel.json`) rendering live project executive dashboard.
 
-## 21. Example pipeline execution
-_TBD (Phase 16)_
+## 21. Pipeline execution
+Step-by-step pipeline execution walkthrough. Details: [docs/pipeline_execution.md](docs/pipeline_execution.md).
 
 ## 22. Future improvements
-_TBD (Phase 16)_
+Streaming ingestion with Structured Streaming and Delta Live Tables (DLT).
 
 ## Repository layout
 ```
