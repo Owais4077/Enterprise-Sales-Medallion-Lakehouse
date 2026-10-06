@@ -82,6 +82,15 @@ class handler(BaseHTTPRequestHandler):
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .pulse-dot {
+            box-shadow: 0 0 10px #10b981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
     </style>
 </head>
 <body class="p-6 md:p-10">
@@ -96,8 +105,12 @@ class handler(BaseHTTPRequestHandler):
                 </p>
             </div>
             <div class="mt-4 md:mt-0 flex items-center gap-3">
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                    ● Live on Vercel
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+                    Live on Vercel
+                </span>
+                <span id="live-time" class="px-3 py-1 text-xs font-mono font-semibold rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                    UTC 00:00:00
                 </span>
                 <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">
                     16/16 Phases Complete
@@ -177,6 +190,15 @@ class handler(BaseHTTPRequestHandler):
             </a>
         </div>
     </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('live-time').innerText = 'UTC ' + now.toUTCString().split(' ')[4];
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
 </body>
 </html>"""
         self.wfile.write(html_content.encode("utf-8"))
