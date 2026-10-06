@@ -1,90 +1,74 @@
 """Vercel Serverless Entry Point & Executive Web Dashboard for Enterprise Sales Data Platform."""
 
-from __future__ import annotations
-
-import os
-
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
-from mangum import Mangum
-
-app = FastAPI(
-    title="Enterprise Sales & Data Platform API",
-    description="Vercel Serverless API & Dashboard for Medallion Lakehouse",
-    version="1.0.0",
-)
-
-handler = Mangum(app)
+import json
+from http.server import BaseHTTPRequestHandler
 
 
+class handler(BaseHTTPRequestHandler):
 
+    def do_GET(self) -> None:
+        if self.path == "/api/health":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            data = {"status": "online", "platform": "Vercel Serverless", "version": "1.0.0"}
+            self.wfile.write(json.dumps(data).encode("utf-8"))
+            return
 
-def get_db_path() -> str:
-    local_db = os.path.join(os.path.dirname(__file__), "..", "data", "state", "pipeline_state.db")
-    if os.path.exists(local_db):
-        return local_db
-    return local_db
+        if self.path == "/api/kpis":
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            sample_kpis = [
+                {
+                    "year": 2024,
+                    "month": 1,
+                    "shipping_country": "US",
+                    "category": "Home & Kitchen",
+                    "total_orders": 117,
+                    "unique_customers": 96,
+                    "total_items_sold": 205,
+                    "total_revenue_usd": 12623.61,
+                },
+                {
+                    "year": 2024,
+                    "month": 1,
+                    "shipping_country": "ES",
+                    "category": "Clothing",
+                    "total_orders": 14,
+                    "unique_customers": 13,
+                    "total_items_sold": 23,
+                    "total_revenue_usd": 880.38,
+                },
+                {
+                    "year": 2024,
+                    "month": 1,
+                    "shipping_country": "CH",
+                    "category": "Office",
+                    "total_orders": 9,
+                    "unique_customers": 7,
+                    "total_items_sold": 16,
+                    "total_revenue_usd": 1476.77,
+                },
+                {
+                    "year": 2024,
+                    "month": 1,
+                    "shipping_country": "IT",
+                    "category": "Electronics",
+                    "total_orders": 42,
+                    "unique_customers": 38,
+                    "total_items_sold": 68,
+                    "total_revenue_usd": 45890.12,
+                },
+            ]
+            self.wfile.write(json.dumps(sample_kpis).encode("utf-8"))
+            return
 
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.end_headers()
 
-@app.get("/api/health")
-def health_check() -> dict[str, str]:
-    return {"status": "online", "platform": "Vercel Serverless", "version": "1.0.0"}
-
-
-@app.get("/api/kpis")
-def get_kpis() -> JSONResponse:
-    """Returns sample Gold monthly sales KPI summary metrics."""
-    sample_kpis = [
-        {
-            "year": 2024,
-            "month": 1,
-            "shipping_country": "US",
-            "category": "Home & Kitchen",
-            "total_orders": 117,
-            "unique_customers": 96,
-            "total_items_sold": 205,
-            "total_revenue_usd": 12623.61,
-        },
-        {
-            "year": 2024,
-            "month": 1,
-            "shipping_country": "ES",
-            "category": "Clothing",
-            "total_orders": 14,
-            "unique_customers": 13,
-            "total_items_sold": 23,
-            "total_revenue_usd": 880.38,
-        },
-        {
-            "year": 2024,
-            "month": 1,
-            "shipping_country": "CH",
-            "category": "Office",
-            "total_orders": 9,
-            "unique_customers": 7,
-            "total_items_sold": 16,
-            "total_revenue_usd": 1476.77,
-        },
-        {
-            "year": 2024,
-            "month": 1,
-            "shipping_country": "IT",
-            "category": "Electronics",
-            "total_orders": 42,
-            "unique_customers": 38,
-            "total_items_sold": 68,
-            "total_revenue_usd": 45890.12,
-        },
-    ]
-    return JSONResponse(content=sample_kpis)
-
-
-@app.get("/", response_class=HTMLResponse)
-@app.get("/{full_path:path}", response_class=HTMLResponse)
-def render_dashboard(full_path: str = "") -> str:
-    """Renders modern interactive web dashboard for Vercel deployment."""
-
-    return """<!DOCTYPE html>
+        html_content = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -195,3 +179,4 @@ def render_dashboard(full_path: str = "") -> str:
     </div>
 </body>
 </html>"""
+        self.wfile.write(html_content.encode("utf-8"))
