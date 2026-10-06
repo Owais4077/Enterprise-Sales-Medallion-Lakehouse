@@ -59,9 +59,7 @@ class DataQualityRunner:
                     res.detail,
                 )
             else:
-                logger.info(
-                    "[%s:%s] PASS: %s", suite.layer, suite.dataset, res.rule_name
-                )
+                logger.info("[%s:%s] PASS: %s", suite.layer, suite.dataset, res.rule_name)
 
         passed_cnt = sum(1 for r in results if r.passed)
         failed_cnt = len(results) - passed_cnt
@@ -75,4 +73,3 @@ class DataQualityRunner:
             failed_rules=failed_cnt,
             rule_results=tuple(results),
         )
-

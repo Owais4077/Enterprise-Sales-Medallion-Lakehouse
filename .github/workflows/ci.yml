@@ -60,6 +60,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Copy Environment Configuration
+        run: cp .env.example .env
+
       - name: Build Docker Container
         run: docker compose build app
 

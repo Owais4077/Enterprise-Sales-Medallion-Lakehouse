@@ -1,6 +1,7 @@
 """Quick inspection script to print summary statistics and sample rows from Gold and Quarantine Delta tables."""
 
 from delta.tables import DeltaTable
+
 from edp.common.config import get_settings
 from edp.common.paths import LakeLayout, Layer
 from edp.common.spark import build_spark_session
@@ -42,7 +43,9 @@ def main():
     q_orders_path = f"{layout.table_path(Layer.SILVER, '_quarantine')}/orders"
     if DeltaTable.isDeltaTable(spark, q_orders_path):
         df_q = spark.read.format("delta").load(q_orders_path)
-        df_q.select("order_id", "total_amount", "status", "quarantine_reason").show(5, truncate=False)
+        df_q.select("order_id", "total_amount", "status", "quarantine_reason").show(
+            5, truncate=False
+        )
     else:
         print("No quarantine orders found.")
 
@@ -51,4 +54,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 import os
-import sqlite3
-from typing import Any
 
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 
 app = FastAPI(
@@ -33,10 +31,46 @@ def health_check() -> dict[str, str]:
 def get_kpis() -> JSONResponse:
     """Returns sample Gold monthly sales KPI summary metrics."""
     sample_kpis = [
-        {"year": 2024, "month": 1, "shipping_country": "US", "category": "Home & Kitchen", "total_orders": 117, "unique_customers": 96, "total_items_sold": 205, "total_revenue_usd": 12623.61},
-        {"year": 2024, "month": 1, "shipping_country": "ES", "category": "Clothing", "total_orders": 14, "unique_customers": 13, "total_items_sold": 23, "total_revenue_usd": 880.38},
-        {"year": 2024, "month": 1, "shipping_country": "CH", "category": "Office", "total_orders": 9, "unique_customers": 7, "total_items_sold": 16, "total_revenue_usd": 1476.77},
-        {"year": 2024, "month": 1, "shipping_country": "IT", "category": "Electronics", "total_orders": 42, "unique_customers": 38, "total_items_sold": 68, "total_revenue_usd": 45890.12},
+        {
+            "year": 2024,
+            "month": 1,
+            "shipping_country": "US",
+            "category": "Home & Kitchen",
+            "total_orders": 117,
+            "unique_customers": 96,
+            "total_items_sold": 205,
+            "total_revenue_usd": 12623.61,
+        },
+        {
+            "year": 2024,
+            "month": 1,
+            "shipping_country": "ES",
+            "category": "Clothing",
+            "total_orders": 14,
+            "unique_customers": 13,
+            "total_items_sold": 23,
+            "total_revenue_usd": 880.38,
+        },
+        {
+            "year": 2024,
+            "month": 1,
+            "shipping_country": "CH",
+            "category": "Office",
+            "total_orders": 9,
+            "unique_customers": 7,
+            "total_items_sold": 16,
+            "total_revenue_usd": 1476.77,
+        },
+        {
+            "year": 2024,
+            "month": 1,
+            "shipping_country": "IT",
+            "category": "Electronics",
+            "total_orders": 42,
+            "unique_customers": 38,
+            "total_items_sold": 68,
+            "total_revenue_usd": 45890.12,
+        },
     ]
     return JSONResponse(content=sample_kpis)
 
