@@ -78,8 +78,10 @@ def get_kpis() -> JSONResponse:
 
 
 @app.get("/", response_class=HTMLResponse)
-def render_dashboard() -> str:
+@app.get("/{full_path:path}", response_class=HTMLResponse)
+def render_dashboard(full_path: str = "") -> str:
     """Renders modern interactive web dashboard for Vercel deployment."""
+
     return """<!DOCTYPE html>
 <html lang="en">
 <head>
