@@ -13,6 +13,9 @@ app = FastAPI(
     version="1.0.0",
 )
 
+handler = app
+
+
 
 def get_db_path() -> str:
     local_db = os.path.join(os.path.dirname(__file__), "..", "data", "state", "pipeline_state.db")
