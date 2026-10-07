@@ -123,7 +123,7 @@ class handler(BaseHTTPRequestHandler):
                     Enterprise Sales Medallion Lakehouse
                 </h1>
                 <p class="text-slate-400 text-sm mt-1">
-                    PySpark · Delta Lake · Airflow · Data Quality · Power BI · Powered by Groq AI
+                    PySpark · Delta Lake · Airflow · Data Quality · Power BI · AI Assistant
                 </p>
             </div>
             <div class="mt-4 md:mt-0 flex items-center gap-3">
@@ -200,7 +200,7 @@ class handler(BaseHTTPRequestHandler):
 
         <!-- Footer -->
         <div class="flex justify-between items-center text-xs text-slate-500 border-t border-slate-800 pt-6">
-            <p>Enterprise Sales & Customer Data Platform · Powered by Groq AI</p>
+            <p>Enterprise Sales & Customer Data Platform · Powered by AI Assistant</p>
             <a href="https://github.com/Owais4077/Enterprise-Sales-Medallion-Lakehouse"
                target="_blank" class="text-blue-400 hover:underline">
                 GitHub Repository →
@@ -211,8 +211,8 @@ class handler(BaseHTTPRequestHandler):
     <!-- Floating AI Agent Trigger Button -->
     <button onclick="toggleAgentModal()"
             class="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-500 hover:to-emerald-500 text-white font-bold px-5 py-3.5 rounded-full shadow-2xl flex items-center gap-3 transition-all duration-300 hover:scale-105 border border-white/20">
-        <span class="text-xl">⚡</span>
-        <span>Groq AI Assistant</span>
+        <span class="text-xl">🤖</span>
+        <span>AI Assistant</span>
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 pulse-dot"></span>
     </button>
 
@@ -221,10 +221,10 @@ class handler(BaseHTTPRequestHandler):
         <!-- Agent Header -->
         <div class="bg-slate-900/90 p-4 border-b border-slate-700 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-lg">⚡</div>
+                <div class="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-lg">🤖</div>
                 <div>
-                    <h3 class="font-bold text-white text-sm">Groq AI Lakehouse Assistant</h3>
-                    <p class="text-xs text-emerald-400 flex items-center gap-1">● Powered by Groq (GPT-OSS 20B)</p>
+                    <h3 class="font-bold text-white text-sm">AI Assistant</h3>
+                    <p class="text-xs text-emerald-400 flex items-center gap-1">● Online · Enterprise Lakehouse Advisor</p>
                 </div>
             </div>
             <button onclick="toggleAgentModal()" class="text-slate-400 hover:text-white text-xl font-bold px-2">✕</button>
@@ -233,7 +233,7 @@ class handler(BaseHTTPRequestHandler):
         <!-- Agent Conversation Body -->
         <div id="chat-box" class="flex-1 p-4 overflow-y-auto space-y-4 text-xs">
             <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 text-slate-200 space-y-2">
-                <p class="font-semibold text-blue-400">👋 Hello! I am your real Groq-powered AI Assistant.</p>
+                <p class="font-semibold text-blue-400">👋 Hello! I am your AI Assistant.</p>
                 <p>Ask me anything about the Medallion Lakehouse architecture, PySpark Delta MERGE, Data Quality assertion rules, Airflow DAGs, or Power BI metrics!</p>
                 <div class="pt-1 flex flex-wrap gap-1.5">
                     <button onclick="sendQuickPrompt('Explain Bronze, Silver, and Gold Medallion architecture')" class="bg-slate-700/60 hover:bg-blue-600/30 text-blue-300 border border-blue-500/30 px-2.5 py-1 rounded-md transition-all">🥉 Medallion Flow</button>
@@ -246,9 +246,9 @@ class handler(BaseHTTPRequestHandler):
         <!-- Chat Input Bar -->
         <div class="p-3 bg-slate-900/90 border-t border-slate-800 flex gap-2">
             <input type="text" id="user-input" onkeydown="handleKey(event)"
-                   placeholder="Ask Groq AI about PySpark, Delta Lake, or Quality..."
+                   placeholder="Ask AI Assistant about PySpark, Delta Lake, or Quality..."
                    class="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
-            <button id="send-btn" onclick="sendMessage()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition-all">Ask Groq</button>
+            <button id="send-btn" onclick="sendMessage()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition-all">Ask AI</button>
         </div>
     </div>
 
@@ -294,8 +294,9 @@ class handler(BaseHTTPRequestHandler):
             const loadingMsg = document.createElement('div');
             loadingMsg.id = 'loading-bubble';
             loadingMsg.className = 'flex justify-start';
-            loadingMsg.innerHTML = `<div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl text-slate-400 italic">⚡ Groq AI is thinking...</div>`;
+            loadingMsg.innerHTML = `<div class="bg-slate-800/90 border border-slate-700 p-3 rounded-xl text-slate-400 italic">🤖 AI Assistant is thinking...</div>`;
             chatBox.appendChild(loadingMsg);
+
             chatBox.scrollTop = chatBox.scrollHeight;
 
             sendBtn.disabled = true;
